@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>《跨越思路》分层练习 | Differentiated Exercises for Crossing the Silk Road</title>
+    <style>
+        /* 基础样式：强制禁止全局滚动，打造完美的单屏触控体验 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; 
+            background-color: #f0fdf4; /* 极为生动清新的浅绿底色 */
+            /* 选用国际流行、圆润活泼的教育资源字体族 */
+            font-family: "Quicksand", "Inter", -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            color: #2c3e50;
+        }
+
+        /* 2. 【新增】极淡的丝路影子背景纹理（含淡金色祥云、沙漠、骆驼剪影、丝绸纹理） */
+        .silk-road-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.35; /* 极淡融合，确保绝不干扰主视觉 */
+            /* 采用极其细腻的纯前端SVG图层：包含沙漠起伏曲线、骆驼商队、飘逸丝绸及吉祥云纹 */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 900' width='100%25' height='100%25'%3E%3Cpath d='M0,600 C300,550 600,680 900,620 C1200,560 1350,610 1440,580 L1440,900 L0,900 Z' fill='%23d4af37' opacity='0.03'/%3E%3Cpath d='M0,700 C400,650 700,750 1100,680 C1300,650 1400,700 1440,690 L1440,900 L0,900 Z' fill='%23d4af37' opacity='0.02'/%3E%3Cg fill='%23d4af37' opacity='0.04'%3E%3Ccircle cx='150' cy='200' r='15'/%3E%3Cpath d='M130,200 Q150,180 170,200 Q150,220 130,200 C110,195 100,205 90,200 C110,215 120,205 130,200 Z'/%3E%3Cpath d='M250,150 Q280,130 310,150 Q280,170 250,150 C230,145 220,155 210,150 C230,165 240,155 250,150 Z'/%3E%3C/g%3E%3Cg fill='%23d4af37' opacity='0.035'%3E%3Cpath d='M200,625 Q205,615 210,623 Q215,620 220,625 L225,635 L195,635 Z'/%3E%3Cpath d='M235,627 Q240,617 245,625 Q250,622 255,627 L260,637 L230,637 Z'/%3E%3Cpath d='M270,629 Q275,619 280,627 Q285,624 290,629 L295,639 L265,639 Z'/%3E%3C/g%3E%3Cpath d='M-100,300 C300,100 600,500 1000,200 C1300,-20 1400,250 1600,100' fill='none' stroke='%23d4af37' stroke-width='1.5' opacity='0.03' stroke-dasharray='5,5'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: center bottom;
+        }
+
+        /* 1. 开屏全屏视频区域 */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #splash-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 核心调整：确保不拉伸不裁剪，完美看清最下方的熊猫 */
+            background-color: #ffffff;
+            position: relative;
+            z-index: 2;
+        }
+
+        #splash-title {
+            position: absolute;
+            top: 15%;
+            z-index: 2010;
+            text-align: center;
+            width: 90%;
+            pointer-events: none; /* 允许点击穿透到背景以跳过 */
+        }
+
+        /* 活泼大方的双语开屏字号 - 调整为：思源黑体、陶土橙色 */
+        .title-cn {
+            display: block;
+            font-size: 3.8rem; /* 题目显著放大 */
+            font-weight: 900;
+            font-family: "Source Han Sans CN", "Noto Sans SC", "PingFang SC", sans-serif; /* 换成思源黑体 */
+            color: #C05C2E; /* 换成陶土橙色 */
+            text-shadow: 0 4px 15px rgba(255, 255, 255, 0.95), 0 0 25px rgba(255, 255, 255, 0.6);
+            letter-spacing: 5px;
+        }
+
+        .title-en {
+            display: block;
+            font-size: 1.4rem; /* 适当微调适配更长的新翻译 */
+            font-weight: 700;
+            color: #D36B3D; /* 英文同步使用明朗的陶土橙色系 */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 12px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
+        }
+
+        /* 静音与开音切换键 */
+        #mute-control {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            z-index: 2020;
+            background: rgba(192, 92, 46, 0.85); /* 适配陶土橙底色 */
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+        }
+        #mute-control:active {
+            transform: scale(0.95);
+        }
+
+        /* 2. 主页面内容区域（严格单屏 Flex 布局，绝不产生滚动条） */
+        #main-content {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            position: relative;
+        }
+
+        .header {
+            flex: 0 0 auto;
+            text-align: center;
+            padding: 5px 0 15px 0;
+            z-index: 5;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: #C05C2E; /* 换成陶土橙色 */
+            font-family: "Source Han Sans CN", "Noto Sans SC", "PingFang SC", sans-serif; /* 换成思源黑体 */
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .header span {
+            font-size: 0.9rem;
+            color: #D36B3D; /* 英文翻译颜色同步 */
+            display: block;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* 核心按钮网格：按层级横向分行，纵向均匀拉伸填满一屏 */
+        .grid-container {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .level-row {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            align-items: center;
+            flex: 1; /* 让每一行在垂直方向上平分屏幕剩余高度 */
+            min-height: 0; /* 允许元素在flex中正确缩小 */
+        }
+
+        /* 左侧层级生动标题 */
+        .row-label {
+            flex: 0 0 95px;
+            font-size: 1rem;
+            font-weight: 900;
+            color: #1b4d3e;
+            text-transform: uppercase;
+            text-align: right;
+            padding-right: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        /* 层级大方简洁按钮 */
+        .level-card {
+            background: #ffffff;
+            height: 85%; /* 高度充满行的绝大部分，大方得体 */
+            border-radius: 18px;
+            border: 2px solid #e2f0e2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            /* 增加灵动活泼的微弹回馈动画 */
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 8px rgba(27, 77, 62, 0.04);
+        }
+
+        .level-card span {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        /* 鼠标悬浮或手指触摸时微微倾斜、放大，色彩更加生动 */
+        .level-card:hover {
+            transform: translateY(-3px) rotate(1deg);
+            box-shadow: 0 10px 20px rgba(27, 77, 62, 0.1);
+            background: #ffffff;
+        }
+
+        .level-card:active {
+            transform: scale(0.95);
+        }
+
+        /* 四个层级专属生动色彩线 */
+        .l1 { flex: 1; border-bottom: 7px solid #4ade80; color: #166534; } /* 生机盎然绿 */
+        .l2 { flex: 1; border-bottom: 7px solid #60a5fa; color: #1e40af; } /* 智慧天空蓝 */
+        .l3 { flex: 1; border-bottom: 7px solid #fbbf24; color: #92400e; } /* 积极晨曦黄 */
+        .l4 { flex: 1; border-bottom: 7px solid #f87171; color: #991b1b; } /* 能量活力红 */
+
+        /* 3. 内嵌练习容器与右上角返回键 */
+        #exercise-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 3000;
+            display: none;
+        }
+
+        #btn-back {
+            position: absolute;
+            top: 18px;
+            right: 18px; /* 严格固定在右上角 */
+            z-index: 3100;
+            background: #1b4d3e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        #btn-back:hover {
+            transform: scale(1.05);
+            background: #276350;
+        }
+
+        #exercise-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 4. 移动端/手机版深度调优（确保手机端同样一屏展示、完美不滚动） */
+        @media (max-width: 600px) {
+            .title-cn { font-size: 2.2rem; }
+            .title-en { font-size: 0.8rem; margin-top: 6px; letter-spacing: 0px; }
+            #splash-title { top: 14%; }
+            
+            .header h1 { font-size: 1.4rem; }
+            .header span { font-size: 0.65rem; }
+            
+            .grid-container { gap: 8px; }
+            .level-row { gap: 8px; }
+            .row-label { flex: 0 0 65px; font-size: 0.8rem; padding-right: 2px; }
+            
+            .level-card { border-radius: 12px; }
+            .level-card span { font-size: 1.5rem; }
+            .l1, .l2, .l3, .l4 { border-bottom-width: 5px; }
+
+            #btn-back { top: 12px; right: 12px; padding: 10px 16px; font-size: 13px; }
+            #mute-control { top: 15px; right: 15px; padding: 10px 16px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen" onclick="skipSplash()">
+        <div class="silk-road-bg"></div>
+        <div id="splash-title">
+            <span class="title-cn">《跨越思路》分层练习</span>
+            <span class="title-en">Differentiated Exercises for Crossing the Silk Road</span>
+        </div>
+        <button id="mute-control" onclick="toggleMute(event)">🔇 开启声音 / Sound On</button>
+        <video id="splash-video" autoplay muted playsinline>
+            <source src="Chinese Learning,Bigger Thinking..mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="main-content">
+        <div class="silk-road-bg"></div>
+        
+        <div class="header">
+            <h1>分层练习选择</h1>
+            <span>Differentiated Exercises for Crossing the Silk Road</span>
+        </div>
+
+        <div class="grid-container">
+            <div class="level-row">
+                <div class="row-label">LEVEL 1</div>
+                <div onclick="openExercise('https://kyslfclx1a.vercel.app/')" class="level-card l1"><span>1A</span></div>
+                <div onclick="openExercise('https://kyslfclx1b.vercel.app/')" class="level-card l1"><span>1B</span></div>
+                <div onclick="openExercise('https://kyslfclx1c.vercel.app/')" class="level-card l1"><span>1C</span></div>
+            </div>
+
+            <div class="level-row">
+                <div class="row-label">LEVEL 2</div>
+                <div onclick="openExercise('https://kyslfclx2a.vercel.app/')" class="level-card l2"><span>2A</span></div>
+                <div onclick="openExercise('https://kyslfclx2b.vercel.app/')" class="level-card l2"><span>2B</span></div>
+                <div onclick="openExercise('https://kyslfclx2c.vercel.app/')" class="level-card l2"><span>2C</span></div>
+            </div>
+
+            <div class="level-row">
+                <div class="row-label">LEVEL 3</div>
+                <div onclick="openExercise('https://kyslfclx3a.vercel.app/')" class="level-card l3"><span>3A</span></div>
+                <div onclick="openExercise('https://kyslfclx3b.vercel.app/')" class="level-card l3"><span>3B</span></div>
+                <div onclick="openExercise('https://kyslfclx3c.vercel.app/')" class="level-card l3"><span>3C</span></div>
+            </div>
+
+            <div class="level-row">
+                <div class="row-label">LEVEL 4</div>
+                <div onclick="openExercise('https://kyslfclx4a.vercel.app/')" class="level-card l4"><span>4A</span></div>
+                <div onclick="openExercise('https://kyslfclx4b.vercel.app/')" class="level-card l4"><span>4B</span></div>
+                <div style="flex: 1; visibility: hidden;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exercise-view">
+        <button id="btn-back" onclick="closeExercise()">返回主页 | BACK ✕</button>
+        <iframe id="exercise-frame" src=""></iframe>
+    </div>
+
+    <script>
+        const video = document.getElementById('splash-video');
+        const splashScreen = document.getElementById('splash-screen');
+        const mainContent = document.getElementById('main-content');
+        const muteBtn = document.getElementById('mute-control');
+        const exerciseView = document.getElementById('exercise-view');
+        const exerciseFrame = document.getElementById('exercise-frame');
+
+        // 双语声音切换逻辑
+        function toggleMute(event) {
+            event.stopPropagation(); // 阻止点击穿透触发跳过开屏
+            if (video.muted) {
+                video.muted = false;
+                muteBtn.innerText = "🔊 关闭声音 / Mute";
+            } else {
+                video.muted = true;
+                muteBtn.innerText = "🔇 开启声音 / Sound On";
+            }
+        }
+
+        // 核心逻辑 1：视频播放完自动解锁主菜单
+        video.onended = function() {
+            enterMain();
+        };
+
+        // 核心逻辑 2：点击屏幕任意非按钮区域亦可快速跳过
+        function skipSplash() {
+            enterMain();
+        }
+
+        function enterMain() {
+            splashScreen.style.display = 'none';
+            mainContent.style.display = 'flex';
+            setTimeout(() => {
+                mainContent.style.opacity = '1';
+            }, 50);
+            video.pause(); // 释放视频流占用的系统运存
+        }
+
+        // 核心逻辑 3：点击卡片，用新内嵌视窗打开，且返回键重定向到列表页
+        function openExercise(url) {
+            exerciseFrame.src = url;
+            exerciseView.style.display = 'block';
+        }
+
+        function closeExercise() {
+            exerciseView.style.display = 'none';
+            exerciseFrame.src = ''; // 卸载网页，防止后台音频继续播放
+        }
+
+        // 容错机制：若加载极慢，5秒后给予提示
+        setTimeout(() => {
+            if(splashScreen.style.display !== 'none') {
+                muteBtn.innerText = "进入练习 / Click to Start";
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
